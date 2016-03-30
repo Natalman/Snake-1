@@ -1,4 +1,4 @@
-package com.clara;
+package Natalman.clara;
 
 import java.awt.Point;
 import java.util.LinkedList;

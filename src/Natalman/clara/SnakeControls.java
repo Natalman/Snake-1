@@ -1,4 +1,4 @@
-package com.clara;
+package Natalman.clara;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
