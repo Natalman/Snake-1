@@ -133,7 +133,7 @@ public class Snake {
 		//Did you hit the wall, snake? 
 		//Or eat your tail? Don't move. 
 
-		if (isGameOver()) {
+		if (this.hitWall || this.ateTail || this.didHitMazeWall()) {
 			SnakeGame.setGameStage(SnakeGame.GAME_OVER);
 			return;
 		}
@@ -142,6 +142,7 @@ public class Snake {
 			SnakeGame.setGameStage(SnakeGame.GAME_WON);
 			return;
 		}
+
 
 		//Use snakeSquares array, and current heading, to move snake
 
@@ -183,8 +184,31 @@ public class Snake {
 
 		//Does this make snake hit the wall?
 		if (snakeHeadX >= maxX || snakeHeadX < 0 || snakeHeadY >= maxY || snakeHeadY < 0 ) {
-			hitWall = true;	
-			SnakeGame.setGameStage(SnakeGame.GAME_OVER);
+			if (!SnakeGame.isWrapWall()) {  // End the game because the Wrapwall is not initiated
+				hitWall = true;
+				SnakeGame.setGameStage(SnakeGame.GAME_OVER);
+			} else {
+				// Otherwise, the snake's head will appear on the other side
+				hitWall = false;
+				// Creating the wrapwall coordinates of where the snake would appear
+				if(snakeHeadX < 0){
+					snakeHeadX= maxX; //Warp to right
+				}
+				else if (snakeHeadX >= maxX){
+					snakeHeadX = 0; //Warp to left
+				}
+
+				if (snakeHeadY < 0){
+					snakeHeadY = maxY; //Warp to bottom
+				}
+				else if (snakeHeadY>= maxY) {
+					snakeHeadY = 0; //Warp to top
+				}
+				// Show the new head
+				snakeSquares[snakeHeadX][snakeHeadY] = 1;
+				// This creates a bug because the snake will hit it tail later on
+				// it is fixed bellow when on the justAteMustGrow
+			}
 			return;
 		}
 
@@ -207,7 +231,9 @@ public class Snake {
 		if (justAteMustGrowThisMuch == 0) {
 			for (int x = 0 ; x < maxX ; x++) {
 				for (int y = 0 ; y < maxY ; y++){
-					if (snakeSquares[x][y] == snakeSize+1) {
+					// Fix the problem of tail left behind that is eaten when wrapWall snake's head shows
+					// Changing == snakeSize into >= SnakeSize
+					if (snakeSquares[x][y] >= snakeSize+1) {
 						snakeSquares[x][y] = 0;
 					}
 				}
@@ -231,6 +257,53 @@ public class Snake {
 		return true;
 	}
 
+	public boolean didHitMazeWall() {
+		// If we are not using the mazewall
+		if (!SnakeGame.isMazeWalls()) { return false; }
+		// if we are using the mazewall as the snake hit the maze wall "Game over"
+		boolean didHit = false;
+		//MazeWall mw = DrawSnakeGamePanel.mw1;
+		for (MazeWall mw : DrawSnakeGamePanel.getGameWalls()) {
+			// AMD: our decision depends partly on the snake's direction & partly on the line's orientation
+			switch (currentHeading) {
+				case DIRECTION_UP: {
+					if (mw.getV_or_h() == 'h' && mw.getGridX() == this.snakeHeadX && mw.getGridY() == this.snakeHeadY) {
+						didHit = true;
+					}
+					break;
+				}
+				case DIRECTION_DOWN: {
+					if (mw.getV_or_h() == 'h' && mw.getGridX() == this.snakeHeadX && mw.getGridY() == this.snakeHeadY + 1) {
+						didHit = true;
+					}
+					break;
+				}
+				case DIRECTION_LEFT: {
+					if (mw.getV_or_h() == 'v' && mw.getGridX() == this.snakeHeadX && mw.getGridY() == this.snakeHeadY) {
+						didHit = true;
+					}
+					break;
+				}
+				case DIRECTION_RIGHT: {
+					if (mw.getV_or_h() == 'v' && mw.getGridX() == this.snakeHeadX + 1 && mw.getGridY() == this.snakeHeadY) {
+						didHit = true;
+					}
+					break;
+				}
+				default: {
+					//FINDBUGS: another switch case with no default.  This one is fine, four clear situations.
+					// Ultimately, shouldn't get here: leave something here that can be turned on for debugging:
+					// System.out.println("Invalid direction detected in Snake.didhitmazewall()!");
+					break;
+				}
+			}
+			// if the current wall under consideration has been hit, we need to exit the loop.
+			if (didHit) { break; }
+		}
+		return didHit;
+	}
+
+
 	public boolean didEatKibble(Kibble kibble) {
 		//Is this kibble in the snake? It should be in the same square as the snake's head
 		if (kibble.getKibbleX() == snakeHeadX && kibble.getKibbleY() == snakeHeadY){
@@ -239,6 +312,11 @@ public class Snake {
 		}
 		return false;
 	}
+
+	//protected boolean didHitWall() {
+		// This will be called so that there will not be a hit wall.
+		//return hitWall && !SnakeGame.isWrapWall();
+	//}
 
 	public String toString(){
 		String textsnake = "";

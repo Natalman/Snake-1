@@ -33,7 +33,19 @@ public class SnakeControls implements KeyListener {
     }
 
     @Override
-    public void keyTyped(KeyEvent ev) {}
+    public void keyTyped(KeyEvent ev) {
+        // This is to create a set up for the user if he needs to customize the snake
+        char keyPressed = ev.getKeyChar();
+        char o = 's';
+
+        // making the user to customize game settings before starting play.
+        if (keyPressed == o ) {
+            // If 'o' is typed, present the options menu.
+
+            SnakeGame.setGameStage(SnakeGame.SET_OPTIONS);
+            SnakeOption setup = new SnakeOption();
+        }
+    }
 
     @Override
     public void keyReleased(KeyEvent e) {}

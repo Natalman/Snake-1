@@ -13,8 +13,8 @@ public class Kibble {
 	 * get recreated, instead it moves, and then will be drawn in the new location. 
 	 */
 	
-	private int kibbleX; //This is the square number (not pixel)
-	private int kibbleY;  //This is the square number (not pixel)
+	private static int kibbleX; //This is the square number (not pixel)
+	private static int kibbleY;  //This is the square number (not pixel)
 	
 	public Kibble(Snake s){
 		//Kibble needs to know where the snake is, so it does not create a kibble in the snake
@@ -24,7 +24,7 @@ public class Kibble {
 		moveKibble(s);
 	}
 	
-	protected void moveKibble(Snake s){
+	protected static void moveKibble(Snake s){
 		
 		Random rng = new Random();
 		boolean kibbleInSnake = true;

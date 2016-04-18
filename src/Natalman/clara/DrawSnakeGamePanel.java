@@ -1,6 +1,7 @@
 package Natalman.clara;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javax.swing.JPanel;
@@ -13,6 +14,8 @@ import javax.swing.JPanel;
 public class DrawSnakeGamePanel extends JPanel {
 	
 	private static int gameStage = SnakeGame.BEFORE_GAME;  //use this to figure out what to paint
+
+	private final static ArrayList<MazeWall> gameWalls = new ArrayList<MazeWall>(); // Creating the mazeBug
 	
 	private Snake snake;
 	private Kibble kibble;
@@ -29,7 +32,7 @@ public class DrawSnakeGamePanel extends JPanel {
     }
 
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);       
+        super.paintComponent(g);
 
         /* Where are we at in the game? 4 phases.. 
          * 1. Before game starts
@@ -41,7 +44,8 @@ public class DrawSnakeGamePanel extends JPanel {
         gameStage = SnakeGame.getGameStage();
         
         switch (gameStage) {
-			case SnakeGame.BEFORE_GAME: {
+			case SnakeGame.BEFORE_GAME:
+			case SnakeGame.SET_OPTIONS: {
 				displayInstructions(g);
 				break;
 			}
@@ -62,15 +66,17 @@ public class DrawSnakeGamePanel extends JPanel {
 
 	private void displayGameWon(Graphics g) {
 		// TODO Replace this with something really special!
+		g.setColor(Color.blue);
 		g.clearRect(100,100,350,350);
 		g.drawString("YOU WON SNAKE!!!", 150, 150);
 		
 	}
 	private void displayGameOver(Graphics g) {
 
+		g.setColor(Color.blue);
 		g.clearRect(100,100,350,350);
 		g.drawString("GAME OVER", 150, 150);
-		
+
 		String textScore = score.getStringScore();
 		String textHighScore = score.getStringHighScore();
 		String newHighScore = score.newHighScore();
@@ -91,6 +97,7 @@ public class DrawSnakeGamePanel extends JPanel {
 		displayKibble(g);	
 	}
 
+
 	private void displayGameGrid(Graphics g) {
 
 		int maxX = SnakeGame.xPixelMaxDimension;
@@ -99,7 +106,7 @@ public class DrawSnakeGamePanel extends JPanel {
 		
 		g.clearRect(0, 0, maxX, maxY);
 
-		g.setColor(Color.RED);
+		g.setColor(Color.lightGray);
 
 		//Draw grid - horizontal lines
 		for (int y=0; y <= maxY ; y+= squareSize){			
@@ -109,18 +116,29 @@ public class DrawSnakeGamePanel extends JPanel {
 		for (int x=0; x <= maxX ; x+= squareSize){			
 			g.drawLine(x, 0, x, maxY);
 		}
+
+		//Drawing the snake wall if we are using this feature
+		if (SnakeGame.isMazeWalls()) {
+			for (MazeWall mw : gameWalls) {
+				mw.draw(g);
+			}
+		}
 	}
 
 	private void displayKibble(Graphics g) {
 
-		//Draw the kibble in green
-		g.setColor(Color.GREEN);
+		//Draw the kibble in yellow and oval
+		g.setColor(Color.yellow);
 
 		int x = kibble.getKibbleX() * SnakeGame.squareSize;
 		int y = kibble.getKibbleY() * SnakeGame.squareSize;
 
-		g.fillRect(x+1, y+1, SnakeGame.squareSize-2, SnakeGame.squareSize-2);
+		g.fillOval(x+1, y+1, SnakeGame.squareSize-2, SnakeGame.squareSize-2);
 		
+	}
+	public static ArrayList<MazeWall> getGameWalls() {
+		//FINDBUGS: prompted by bug check
+		return gameWalls;
 	}
 
 
@@ -128,20 +146,22 @@ public class DrawSnakeGamePanel extends JPanel {
 
 		LinkedList<Point> coordinates = snake.segmentsToDraw();
 		
-		//Draw head in grey
-		g.setColor(Color.LIGHT_GRAY);
+		//Draw head in black
+		g.setColor(Color.black);
 		Point head = coordinates.pop();
-		g.fillRect((int)head.getX(), (int)head.getY(), SnakeGame.squareSize, SnakeGame.squareSize);
+		g.fillOval((int)head.getX(), (int)head.getY(), SnakeGame.squareSize, SnakeGame.squareSize);
 		
 		//Draw rest of snake in black
-		g.setColor(Color.BLACK);
+		g.setColor(Color.black);
 		for (Point p : coordinates) {
-			g.fillRect((int)p.getX(), (int)p.getY(), SnakeGame.squareSize, SnakeGame.squareSize);
+			g.fillOval((int)p.getX(), (int)p.getY(), SnakeGame.squareSize, SnakeGame.squareSize);
 		}
 	}
 
 
 	private void displayInstructions(Graphics g) {
+		g.setColor(Color.blue);
+		g.drawString("Press s to set up the game",100,100);
         g.drawString("Press any key to begin!",100,200);		
         g.drawString("Press q to quit the game",100,300);		
     	}

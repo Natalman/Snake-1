@@ -19,7 +19,8 @@ public class GameClock extends TimerTask {
 		int stage = SnakeGame.getGameStage();
 
 		switch (stage) {
-			case SnakeGame.BEFORE_GAME: {
+			case SnakeGame.BEFORE_GAME:
+			case SnakeGame.SET_OPTIONS:{
 				//don't do anything, waiting for user to press a key to start
 				break;
 			}
