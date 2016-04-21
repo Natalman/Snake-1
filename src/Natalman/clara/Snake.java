@@ -191,6 +191,8 @@ public class Snake {
 				// Otherwise, the snake's head will appear on the other side
 				hitWall = false;
 				// Creating the wrapwall coordinates of where the snake would appear
+
+				//Just fix the snake
 				if(snakeHeadX < 0){
 					snakeHeadX = maxX -1; //Warp to right
 				}
