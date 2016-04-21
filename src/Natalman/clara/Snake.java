@@ -192,14 +192,14 @@ public class Snake {
 				hitWall = false;
 				// Creating the wrapwall coordinates of where the snake would appear
 				if(snakeHeadX < 0){
-					snakeHeadX= maxX; //Warp to right
+					snakeHeadX = maxX -1; //Warp to right
 				}
 				else if (snakeHeadX >= maxX){
 					snakeHeadX = 0; //Warp to left
 				}
 
 				if (snakeHeadY < 0){
-					snakeHeadY = maxY; //Warp to bottom
+					snakeHeadY = maxY -1; //Warp to bottom
 				}
 				else if (snakeHeadY>= maxY) {
 					snakeHeadY = 0; //Warp to top
